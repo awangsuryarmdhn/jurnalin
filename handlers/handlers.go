@@ -623,24 +623,30 @@ func formatBibTeX(j models.Journal) string {
 
 // Sitemap handles sitemap.xml requests
 func (h *Handler) Sitemap(c *gin.Context) {
-	sitemap := `<?xml version="1.0" encoding="UTF-8"?>
+	scheme := "http"
+	if c.Request.TLS != nil || c.GetHeader("X-Forwarded-Proto") == "https" {
+		scheme = "https"
+	}
+	baseURL := fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+
+	sitemap := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jurnalin.netlify.app/</loc>
+    <loc>%s/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://jurnalin.netlify.app/about</loc>
+    <loc>%s/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jurnalin.netlify.app/api</loc>
+    <loc>%s/api</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-</urlset>`
+</urlset>`, baseURL, baseURL, baseURL)
 	c.Header("Content-Type", "application/xml")
 	c.String(http.StatusOK, sitemap)
 }
