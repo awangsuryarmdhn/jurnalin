@@ -662,7 +662,12 @@ func (h *Handler) Manifest(c *gin.Context) {
 		"description":       "Agregator Jurnal Ilmiah Indonesia",
 		"icons": []gin.H{
 			{
-				"src":   "https://uxwing.com/wp-content/themes/uxwing/download/education-school/academic-book-icon.png",
+				"src":   "/static/images/favicon.png",
+				"sizes": "192x192",
+				"type":  "image/png",
+			},
+			{
+				"src":   "/static/images/favicon.png",
 				"sizes": "512x512",
 				"type":  "image/png",
 			},
