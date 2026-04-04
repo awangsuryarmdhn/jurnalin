@@ -15,6 +15,7 @@ import (
 
 	"jurnalinal/models"
 	"jurnalinal/services"
+	"jurnalinal/templates"
 )
 
 // Handler holds dependencies for HTTP handlers
@@ -26,10 +27,8 @@ type Handler struct {
 
 // NewHandler creates a new handler
 func NewHandler() *Handler {
-	// Parse layout template
-	layoutTmpl := template.Must(template.ParseFiles(
-		"templates/layout.html",
-	))
+	// Parse layout template from embedded FS
+	layoutTmpl := template.Must(template.ParseFS(templates.FS, "layout.html"))
 
 	return &Handler{
 		Aggregator: services.NewAggregatorService(),
@@ -101,7 +100,7 @@ func (h *Handler) renderTemplate(c *gin.Context, tmplName string, data gin.H) {
 			return string(r[start:end])
 		},
 	}
-	contentTmpl := template.Must(template.New(tmplName).Funcs(funcMap).ParseFiles("templates/" + tmplName))
+	contentTmpl := template.Must(template.New(tmplName).Funcs(funcMap).ParseFS(templates.FS, tmplName))
 
 	var contentBuf bytes.Buffer
 	if err := contentTmpl.Execute(&contentBuf, data); err != nil {
