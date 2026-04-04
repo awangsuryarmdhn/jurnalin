@@ -1,0 +1,197 @@
+<div class="min-h-screen bg-base-200">
+    <!-- Hero Section -->
+    <div class="hero-gradient py-20 relative overflow-hidden">
+        <div class="grid-pattern"></div>
+        
+        <!-- Floating orbs -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-20"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-emerald-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl opacity-20"></div>
+
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="w-20 h-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-slide-up">
+                <i class="fas fa-code text-white text-3xl"></i>
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm font-medium mb-6 backdrop-blur-sm animate-slide-up" style="animation-delay: 0.1s">
+                <i class="fas fa-satellite-dish text-xs text-emerald-400 animate-pulse"></i> REST API v1.0 — Public & Stable
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight animate-slide-up" style="animation-delay: 0.2s">
+                Akses Database <span class="text-emerald-400">Terbuka</span>
+            </h1>
+            <p class="text-white/70 text-lg max-w-2xl mx-auto animate-slide-up font-light" style="animation-delay: 0.3s">
+                Integrasikan database jutaan jurnal ilmiah ke aplikasi Anda secara gratis, tanpa autentikasi, dan tanpa batas.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-3 mt-8 animate-slide-up" style="animation-delay: 0.4s">
+                <span class="badge badge-lg bg-white/5 text-white/80 border-white/10 px-4 py-2 hover:bg-white/10 cursor-default transition">
+                    <i class="fas fa-key mr-2 text-emerald-400"></i> No API Keys
+                </span>
+                <span class="badge badge-lg bg-white/5 text-white/80 border-white/10 px-4 py-2 hover:bg-white/10 cursor-default transition">
+                    <i class="fas fa-file-code mr-2 text-blue-400"></i> JSON Output
+                </span>
+                <span class="badge badge-lg bg-white/5 text-white/80 border-white/10 px-4 py-2 hover:bg-white/10 cursor-default transition">
+                    <i class="fas fa-bolt mr-2 text-amber-400"></i> Rapid Response
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Blocks -->
+    <div class="container mx-auto px-4 py-12 max-w-5xl -mt-10 relative z-20">
+        
+        <!-- Base URL -->
+        <div class="bg-base-100 rounded-3xl p-8 shadow-xl border border-base-200 mb-8">
+            <h2 class="text-xl font-black text-base-content mb-4 tracking-tight">Endpoint Utama (Base URL)</h2>
+            <div class="relative group">
+                <div class="bg-neutral p-5 rounded-2xl flex items-center justify-between border border-neutral-focus">
+                    <code class="text-emerald-400 font-mono text-sm break-all font-bold" id="base-url-text">http://localhost:8080/api/v1</code>
+                    <button onclick="copyToClipboard('http://localhost:8080/api/v1', 'Base URL disalin!')" 
+                        class="btn btn-sm btn-ghost text-neutral-content/40 hover:text-emerald-400 transition-colors shrink-0">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation sections -->
+        <div class="space-y-8">
+            
+            <!-- Search Results Endpoint -->
+            <section class="bg-base-100 rounded-3xl p-8 shadow-md border border-base-200 overflow-hidden">
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="badge badge-primary font-black px-4 py-3 rounded-xl text-xs uppercase">GET</span>
+                    <h3 class="text-xl font-bold font-mono">/search</h3>
+                    <div class="ml-auto text-xs text-base-content/40 italic">Cari jurnal ilmiah di sistem kami</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Parameters column -->
+                    <div>
+                        <h4 class="text-xs font-black text-base-content/50 uppercase tracking-widest mb-4">Query Parameters</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <code class="text-primary font-bold bg-primary/5 px-2 py-0.5 rounded text-xs">q</code>
+                                <div class="text-xs">
+                                    <span class="text-red-500 font-bold">Required.</span> Kata kunci pencarian (topik, DOI, judul).
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">source</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Filter sumber khusus: <code class="text-xs">crossref, arxiv, doaj, semanticscholar</code>.
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">page</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Nomor halaman (default: 1).
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">year_from</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Filter tahun awal riset.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="text-xs font-black text-base-content/50 uppercase tracking-widest mb-3">Live Test</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="/api/v1/search?q=deep+learning" target="_blank" class="btn btn-sm btn-ghost border-base-300 rounded-xl text-[10px] lowercase font-mono">
+                                    /search?q=deep+learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code preview column -->
+                    <div class="bg-neutral rounded-2xl p-5 border border-neutral-focus">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Example JSON Response</span>
+                            <i class="fas fa-file-code text-neutral-content/20"></i>
+                        </div>
+                        <pre class="text-[11px] font-mono leading-relaxed text-neutral-content/70 overflow-auto max-h-[300px] scrollbar-thin">
+{
+  "results": [
+    {
+      "id": "crossref_10.123/456",
+      "title": "Quantum Computing Frontiers",
+      "authors": [
+        { "name": "Prof. Richard F." }
+      ],
+      "source": "CrossRef",
+      "year": 2024,
+      "doi": "10.123/456",
+      "is_open_access": true
+    }
+  ],
+  "total": 540,
+  "page": 1,
+  "sources": ["CrossRef", "arXiv"]
+}</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Journal Endpoint -->
+            <section class="bg-base-100 rounded-3xl p-8 shadow-md border border-base-200 overflow-hidden">
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="badge badge-info font-black px-4 py-3 rounded-xl text-xs uppercase text-white border-0">GET</span>
+                    <h3 class="text-xl font-bold font-mono">/journal/:id</h3>
+                    <div class="ml-auto text-xs text-base-content/40 italic">Ambil detail lengkap per dokumen</div>
+                </div>
+                <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10 mb-5">
+                    <p class="text-xs text-base-content/60 leading-relaxed">
+                        Gunakan parameter ID gabungan <code class="font-bold text-primary">source_id</code>. Contoh: <code class="font-bold">arxiv_2301.12345</code> atau <code class="font-bold">crossref_10.123/abc</code>. Seluruh metadata penulis, sitasi, dan abstrak lengkap akan dikirimkan.
+                    </p>
+                </div>
+                <div class="bg-neutral p-4 rounded-xl flex items-center justify-between">
+                    <code class="text-emerald-400 font-mono text-xs">/api/v1/journal/arxiv_2301.12345</code>
+                    <a href="/api/v1/journal/arxiv_2301.12345" target="_blank" class="btn btn-xs btn-ghost text-emerald-400">Test →</a>
+                </div>
+            </section>
+
+            <!-- Metadata endpoints -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <section class="bg-base-100 rounded-3xl p-6 shadow-md border border-base-200">
+                    <h3 class="text-sm font-black mb-4 flex items-center gap-2">
+                        <i class="fas fa-database text-blue-500"></i> /sources
+                    </h3>
+                    <p class="text-xs text-base-content/50 mb-4">Melihat daftar database yang sedang aktif di sistem JURNALIN saat ini.</p>
+                    <div class="bg-neutral p-3 rounded-xl border border-neutral-focus">
+                        <code class="text-emerald-400 font-mono text-[10px]">GET /api/v1/sources</code>
+                    </div>
+                </section>
+                <section class="bg-base-100 rounded-3xl p-6 shadow-md border border-base-200">
+                    <h3 class="text-sm font-black mb-4 flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-amber-500"></i> Usage Policy
+                    </h3>
+                    <p class="text-[11px] text-base-content/50 leading-relaxed">
+                        API kami sepenuhnya gratis. Kami tidak memberlakukan rate-limit ketat secara default, namun mohon untuk menggunakan sistem secara bijak (<span class="font-bold">fair use</span>) agar ketersediaan database eksternal tetap terjaga.
+                    </p>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer Help -->
+        <div class="mt-12 text-center">
+            <p class="text-xs text-base-content/40 lowercase">Butuh bantuan integrasi? Hubungi tim via GitHub</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(text, msg) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 right-10 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-2xl z-[100] animate-slide-up font-bold text-sm';
+            toast.textContent = '✅ ' + msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('animate-slide-up');
+                toast.classList.add('animate-slide-down');
+                setTimeout(() => toast.remove(), 400);
+            }, 2000);
+        });
+    }
+</script>

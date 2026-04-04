@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/v1/
+Disallow: /pdf/proxy
+
+Sitemap: https://jurnalin.netlify.app/sitemap.xml

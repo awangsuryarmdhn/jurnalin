@@ -1,0 +1,426 @@
+<div class="min-h-screen bg-base-200">
+
+    <!-- Sticky Search Bar -->
+    <div class="bg-base-100 border-b border-base-200 sticky top-[65px] z-40 shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <form action="/search" method="GET" class="flex gap-2 items-center">
+                <div class="flex-1 relative">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-base-content/30 text-sm pointer-events-none"></i>
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ .Query }}"
+                        placeholder="Cari jurnal, paper, artikel..."
+                        class="input input-md w-full bg-base-200 border border-base-300 pl-10 rounded-xl focus:border-primary text-sm"
+                        required
+                        autocomplete="off"
+                    />
+                </div>
+                <!-- Preserve filters -->
+                {{ if .YearFrom }}<input type="hidden" name="year_from" value="{{ .YearFrom }}" />{{ end }}
+                {{ if .YearTo }}<input type="hidden" name="year_to" value="{{ .YearTo }}" />{{ end }}
+                {{ if .Language }}<input type="hidden" name="language" value="{{ .Language }}" />{{ end }}
+                {{ if .Source }}<input type="hidden" name="source" value="{{ .Source }}" />{{ end }}
+                <button type="submit" class="btn btn-primary btn-md rounded-xl px-5 font-semibold">
+                    <i class="fas fa-search"></i><span class="hidden sm:inline ml-1.5">Cari</span>
+                </button>
+                <button type="button" onclick="toggleFilterPanel()" class="btn btn-ghost btn-md rounded-xl border border-base-300 text-base-content/60 hover:border-primary hover:text-primary">
+                    <i class="fas fa-sliders-h text-sm"></i>
+                    <span class="hidden sm:inline text-sm ml-1.5">Filter</span>
+                    {{ if or .YearFrom .YearTo .Language .Source }}
+                    <div class="badge badge-xs badge-primary ml-1">!</div>
+                    {{ end }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filter-panel" class="hidden bg-base-100 border-b border-base-200 shadow-sm">
+        <form action="/search" method="GET" id="filter-form" class="container mx-auto px-4 py-4">
+            <input type="hidden" name="q" value="{{ .Query }}" />
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/50 block mb-1.5">Tahun Dari</label>
+                    <input type="number" name="year_from" value="{{ if .YearFrom }}{{ .YearFrom }}{{ end }}"
+                        placeholder="2010" min="1900" max="2025"
+                        class="input input-sm w-full border border-base-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-base-content/50 block mb-1.5">Tahun Sampai</label>
+                    <input type="number" name="year_to" value="{{ if .YearTo }}{{ .YearTo }}{{ end }}"
+                        placeholder="2025" min="1900" max="2025"
+                        class="input input-sm w-full border border-base-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-base-content/50 block mb-1.5">Bahasa</label>
+                    <select name="language" class="select select-sm w-full border border-base-300 rounded-lg text-sm">
+                        <option value="">Semua Bahasa</option>
+                        <option value="en" {{ if eq .Language "en" }}selected{{ end }}>English</option>
+                        <option value="id" {{ if eq .Language "id" }}selected{{ end }}>Indonesia</option>
+                        <option value="de" {{ if eq .Language "de" }}selected{{ end }}>Deutsch</option>
+                        <option value="fr" {{ if eq .Language "fr" }}selected{{ end }}>Français</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-base-content/50 block mb-1.5">Urutkan</label>
+                    <select name="sort" class="select select-sm w-full border border-base-300 rounded-lg text-sm">
+                        <option value="relevance" {{ if eq .SortBy "relevance" }}selected{{ end }}>Relevansi</option>
+                        <option value="year_desc" {{ if eq .SortBy "year_desc" }}selected{{ end }}>Terbaru</option>
+                        <option value="year_asc" {{ if eq .SortBy "year_asc" }}selected{{ end }}>Terlama</option>
+                        <option value="citations" {{ if eq .SortBy "citations" }}selected{{ end }}>Sitasi Terbanyak</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-lg flex-1 font-semibold">
+                        <i class="fas fa-filter mr-1"></i> Terapkan
+                    </button>
+                    <a href="/search?q={{ .Query }}" class="btn btn-ghost btn-sm rounded-lg text-base-content/50 border border-base-300">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mx-auto px-4 py-6">
+
+        {{ if .Error }}
+        <!-- Error state -->
+        <div class="alert alert-error rounded-2xl shadow-sm">
+            <i class="fas fa-exclamation-triangle text-lg"></i>
+            <div>
+                <p class="font-semibold">Terjadi Kesalahan</p>
+                <p class="text-sm opacity-80">{{ .Error }}</p>
+            </div>
+        </div>
+
+        {{ else if .Results }}
+        <!-- Results Layout: 2-column on large screens -->
+        <div class="flex gap-6">
+
+            <!-- Main Results -->
+            <div class="flex-1 min-w-0">
+                <!-- Results Header -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div>
+                        <h1 class="text-lg font-bold text-base-content">
+                            Hasil untuk <span class="gradient-text">"{{ .Query }}"</span>
+                        </h1>
+                        <p class="text-xs text-base-content/50 mt-0.5">
+                            Menampilkan {{ len .Results }} dari ~{{ .Total }} hasil
+                            {{ if .Sources }}
+                            · dari {{ range $i, $s := .Sources }}{{ if $i }}, {{ end }}<span class="font-medium text-base-content/70">{{ $s }}</span>{{ end }}
+                            {{ end }}
+                        </p>
+                    </div>
+                    <a href="/search?q={{ .Query }}&format=json" target="_blank"
+                        class="btn btn-xs btn-ghost border border-base-300 rounded-lg text-xs hover:border-primary hover:text-primary">
+                        <i class="fas fa-code mr-1"></i> JSON API
+                    </a>
+                </div>
+
+                {{ if .Suggestion }}
+                <div class="alert bg-primary/5 border-primary/20 rounded-2xl mb-5 py-3 shadow-sm animate-pulse-subtle">
+                    <i class="fas fa-magic text-primary text-sm"></i>
+                    <div class="text-sm">
+                        Mungkin maksud Anda: <a href="/search?q={{ .Suggestion | urlEncode }}" class="font-bold text-primary hover:underline italic">"{{ .Suggestion }}"</a>?
+                    </div>
+                </div>
+                {{ end }}
+
+                <!-- Results list -->
+                <div class="space-y-3">
+                    {{ range $index, $journal := .Results }}
+                    <article class="journal-card bg-base-100 rounded-2xl p-5 animate-slide-up" style="animation-delay: {{ mul $index 40 }}ms">
+                        <!-- Source + Open Access badges -->
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                {{ if eq $journal.Source "CrossRef" }}
+                                <span class="badge-crossref text-xs font-semibold rounded-md px-2 py-0.5 inline-flex items-center gap-1">
+                                    <i class="fas fa-link text-[10px]"></i>CrossRef
+                                </span>
+                                {{ else if eq $journal.Source "arXiv" }}
+                                <span class="badge-arxiv text-xs font-semibold rounded-md px-2 py-0.5 inline-flex items-center gap-1">
+                                    <i class="fas fa-atom text-[10px]"></i>arXiv
+                                </span>
+                                {{ else if eq $journal.Source "DOAJ" }}
+                                <span class="badge-doaj text-xs font-semibold rounded-md px-2 py-0.5 inline-flex items-center gap-1">
+                                    <i class="fas fa-unlock text-[10px]"></i>DOAJ
+                                </span>
+                                {{ else if eq $journal.Source "Semantic Scholar" }}
+                                <span class="badge-ss text-xs font-semibold rounded-md px-2 py-0.5 inline-flex items-center gap-1">
+                                    <i class="fas fa-brain text-[10px]"></i>S2
+                                </span>
+                                {{ else }}
+                                <span class="bg-base-200 text-base-content/60 text-xs font-semibold rounded-md px-2 py-0.5">
+                                    {{ $journal.Source }}
+                                </span>
+                                {{ end }}
+
+                                {{ if $journal.IsOpenAccess }}
+                                <span class="text-xs font-semibold rounded-md px-2 py-0.5 inline-flex items-center gap-1" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;">
+                                    <i class="fas fa-lock-open text-[10px]"></i>Open Access
+                                </span>
+                                {{ end }}
+
+                                {{ if $journal.Year }}
+                                <span class="text-xs text-base-content/40 font-medium">
+                                    {{ $journal.Year }}
+                                </span>
+                                {{ end }}
+                            </div>
+
+                            <!-- Bookmark -->
+                            <button
+                                onclick="handleBookmark(this, '{{ $journal.ID }}', '{{ js $journal.Title }}', '/journal/{{ $journal.ID }}')"
+                                class="btn btn-ghost btn-xs btn-circle text-base-content/30 hover:text-primary transition flex-shrink-0"
+                                title="Bookmark"
+                                data-id="{{ $journal.ID }}"
+                            >
+                                <i class="far fa-bookmark text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Title -->
+                        <a href="/journal/{{ $journal.ID }}" class="block font-bold text-base-content text-base hover:text-primary transition line-clamp-2 mb-1.5 leading-snug">
+                            {{ $journal.Title }}
+                        </a>
+
+                        <!-- Authors -->
+                        {{ if $journal.Authors }}
+                        <p class="text-xs text-base-content/50 mb-2">
+                            <i class="fas fa-users mr-1 text-[10px]"></i>
+                            {{ range $i, $author := $journal.Authors }}{{ if lt $i 3 }}{{ if $i }}, {{ end }}{{ $author.Name }}{{ end }}{{ end }}
+                            {{ if gt (len $journal.Authors) 3 }}<span class="italic">et al.</span>{{ end }}
+                        </p>
+                        {{ end }}
+
+                        <!-- Abstract -->
+                        {{ if $journal.Abstract }}
+                        <p class="text-sm text-base-content/60 line-clamp-2 mb-3 leading-relaxed">{{ $journal.Abstract }}</p>
+                        {{ end }}
+
+                        <!-- Meta + Actions row -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-base-200">
+                            <!-- Meta info -->
+                            <div class="flex flex-wrap items-center gap-3 text-xs text-base-content/40">
+                                {{ if $journal.Citations }}
+                                <span class="flex items-center gap-1 text-amber-600 font-semibold">
+                                    <i class="fas fa-quote-right text-[10px]"></i>{{ $journal.Citations }} sitasi
+                                </span>
+                                {{ end }}
+                                {{ if $journal.Language }}
+                                <span class="flex items-center gap-1">
+                                    <i class="fas fa-globe text-[10px]"></i>{{ $journal.Language }}
+                                </span>
+                                {{ end }}
+                                {{ if $journal.Subjects }}
+                                <span class="flex items-center gap-1">
+                                    <i class="fas fa-tag text-[10px]"></i>
+                                    {{ range $i, $s := $journal.Subjects }}{{ if lt $i 2 }}{{ if $i }}, {{ end }}{{ $s }}{{ end }}{{ end }}
+                                </span>
+                                {{ end }}
+                            </div>
+                            <!-- Action buttons -->
+                            <div class="flex gap-1.5">
+                                <a href="/journal/{{ $journal.ID }}" class="btn btn-xs btn-primary rounded-lg text-xs font-semibold">
+                                    <i class="fas fa-eye mr-1"></i>Detail
+                                </a>
+                                {{ if $journal.PDFURL }}
+                                <button onclick="downloadPDF('{{ $journal.PDFURL }}', '{{ js $journal.Title }}')" class="btn btn-xs btn-download-pdf rounded-lg text-xs font-semibold">
+                                    <i class="fas fa-file-pdf mr-1"></i>PDF
+                                </button>
+                                {{ end }}
+                                {{ if $journal.DOI }}
+                                <a href="https://doi.org/{{ $journal.DOI }}" target="_blank" class="btn btn-xs btn-ghost border border-base-300 rounded-lg text-xs hover:border-primary">
+                                    <i class="fas fa-link mr-1"></i>DOI
+                                </a>
+                                {{ end }}
+                                {{ if $journal.URL }}
+                                <a href="{{ $journal.URL }}" target="_blank" class="btn btn-xs btn-ghost border border-base-300 rounded-lg text-xs hover:border-primary">
+                                    <i class="fas fa-external-link-alt mr-1"></i>Sumber
+                                </a>
+                                {{ end }}
+                            </div>
+                        </div>
+                    </article>
+                    {{ end }}
+                </div>
+
+                <!-- Pagination -->
+                {{ if gt .TotalPages 1 }}
+                <div class="flex justify-center mt-8 mb-4">
+                    <div class="join">
+                        {{ if gt .Page 1 }}
+                        <a href="/search?q={{ .Query }}&page={{ sub .Page 1 }}{{ if .Source }}&source={{ .Source }}{{ end }}{{ if .YearFrom }}&year_from={{ .YearFrom }}{{ end }}{{ if .YearTo }}&year_to={{ .YearTo }}{{ end }}"
+                            class="join-item btn btn-sm btn-ghost border border-base-300">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </a>
+                        {{ end }}
+
+                        <button class="join-item btn btn-sm btn-primary pointer-events-none min-w-[44px]">{{ .Page }}</button>
+
+                        {{ if lt .Page .TotalPages }}
+                        <a href="/search?q={{ .Query }}&page={{ add .Page 1 }}{{ if .Source }}&source={{ .Source }}{{ end }}{{ if .YearFrom }}&year_from={{ .YearFrom }}{{ end }}{{ if .YearTo }}&year_to={{ .YearTo }}{{ end }}"
+                            class="join-item btn btn-sm btn-ghost border border-base-300">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                        {{ end }}
+                    </div>
+                </div>
+                <p class="text-center text-xs text-base-content/40">Halaman {{ .Page }} dari {{ .TotalPages }}</p>
+                {{ end }}
+            </div>
+
+            <!-- Sidebar: Source quick links -->
+            <aside class="hidden xl:block w-64 shrink-0">
+                <div class="sticky top-[130px] space-y-4">
+                    <div class="bg-base-100 rounded-2xl p-4 border border-base-200">
+                        <h3 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-3">Cari di Sumber</h3>
+                        <div class="space-y-1.5">
+                            <a href="https://api.crossref.org/works?query={{ .Query | urlEncode }}&rows=20" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <i class="fas fa-link text-blue-600 text-xs"></i>
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">CrossRef</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                            <a href="https://arxiv.org/search/?searchtype=all&query={{ .Query | urlEncode }}" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <i class="fas fa-atom text-red-600 text-xs"></i>
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">arXiv</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                            <a href="https://doaj.org/search/articles?ref=homepage&query={{ .Query | urlEncode }}" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <i class="fas fa-unlock text-emerald-600 text-xs"></i>
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">DOAJ</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                            <a href="https://www.semanticscholar.org/search?q={{ .Query | urlEncode }}&sort=Relevance" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-violet-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <i class="fas fa-brain text-violet-600 text-xs"></i>
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">Semantic Scholar</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                            <div class="border-t border-base-200 pt-1.5 mt-1.5"></div>
+                            <a href="https://garuda.kemdikbud.go.id/journal/search?q={{ .Query | urlEncode }}" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center shrink-0 text-base">
+                                    🦅
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">Garuda</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                            <a href="https://scholar.google.com/scholar?q={{ .Query | urlEncode }}" target="_blank"
+                                class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-base-200 transition group text-sm">
+                                <div class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <i class="fab fa-google text-orange-500 text-xs"></i>
+                                </div>
+                                <span class="font-medium text-base-content/70 group-hover:text-primary">Google Scholar</span>
+                                <i class="fas fa-external-link-alt text-[10px] text-base-content/20 ml-auto"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-base-100 rounded-2xl p-4 border border-base-200">
+                        <h3 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-3">Tips Pencarian</h3>
+                        <ul class="space-y-2 text-xs text-base-content/50 leading-relaxed">
+                            <li class="flex gap-2"><i class="fas fa-lightbulb text-amber-500 mt-0.5 shrink-0"></i> Gunakan kata kunci spesifik dalam bahasa Inggris untuk hasil lebih banyak</li>
+                            <li class="flex gap-2"><i class="fas fa-filter text-primary mt-0.5 shrink-0"></i> Filter berdasarkan tahun untuk jurnal terbaru</li>
+                            <li class="flex gap-2"><i class="fas fa-unlock text-emerald-500 mt-0.5 shrink-0"></i> Pilih Open Access untuk jurnal yang bisa diunduh gratis</li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        {{ else }}
+        <!-- Empty state -->
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+            <div class="w-24 h-24 bg-base-200 rounded-full flex items-center justify-center mb-6">
+                <i class="fas fa-search text-4xl text-base-content/20"></i>
+            </div>
+            <h2 class="text-xl font-bold text-base-content mb-2">Tidak Ada Hasil</h2>
+            <p class="text-base-content/50 max-w-sm text-sm mb-6">
+                Tidak ada jurnal yang cocok dengan <strong class="text-base-content">"{{ .Query }}"</strong>.<br/>
+                Coba gunakan kata kunci yang berbeda atau lebih umum.
+            </p>
+
+            {{ if .Suggestion }}
+            <div class="alert bg-primary/10 border-primary/30 rounded-2xl mb-8 py-4 max-w-md shadow-lg animate-bounce-subtle">
+                <i class="fas fa-magic text-primary text-xl"></i>
+                <div class="text-left">
+                    <p class="text-xs font-bold text-primary/60 uppercase tracking-widest mb-0.5">Saran Pencarian</p>
+                    <p class="text-sm">Apakah maksud Anda: <a href="/search?q={{ .Suggestion | urlEncode }}" class="font-black text-primary hover:underline italic">"{{ .Suggestion }}"</a>?</p>
+                </div>
+            </div>
+            {{ end }}
+            
+            <!-- External source fallback -->
+            <div class="bg-base-100 rounded-2xl p-5 border border-base-200 mb-6 max-w-sm w-full">
+                <p class="text-xs font-semibold text-base-content/50 mb-3 uppercase tracking-wide">Cari langsung di sumber lain:</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="https://arxiv.org/search/?query={{ .Query | urlEncode }}" target="_blank"
+                        class="flex items-center gap-2 p-2 rounded-lg bg-red-50 hover:bg-red-100 transition text-sm text-red-700 font-medium">
+                        <i class="fas fa-atom text-xs"></i> arXiv
+                    </a>
+                    <a href="https://doaj.org/search/articles?query={{ .Query | urlEncode }}" target="_blank"
+                        class="flex items-center gap-2 p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition text-sm text-emerald-700 font-medium">
+                        <i class="fas fa-unlock text-xs"></i> DOAJ
+                    </a>
+                    <a href="https://www.semanticscholar.org/search?q={{ .Query | urlEncode }}" target="_blank"
+                        class="flex items-center gap-2 p-2 rounded-lg bg-violet-50 hover:bg-violet-100 transition text-sm text-violet-700 font-medium">
+                        <i class="fas fa-brain text-xs"></i> Semantic
+                    </a>
+                    <a href="https://scholar.google.com/scholar?q={{ .Query | urlEncode }}" target="_blank"
+                        class="flex items-center gap-2 p-2 rounded-lg bg-orange-50 hover:bg-orange-100 transition text-sm text-orange-700 font-medium">
+                        <i class="fab fa-google text-xs"></i> Scholar
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2">
+                <a href="/search?q=machine+learning" class="badge badge-outline border-primary/30 text-primary px-3 py-2 cursor-pointer hover:bg-primary/5">Machine Learning</a>
+                <a href="/search?q=artificial+intelligence" class="badge badge-outline border-primary/30 text-primary px-3 py-2 cursor-pointer hover:bg-primary/5">Artificial Intelligence</a>
+                <a href="/search?q=data+science" class="badge badge-outline border-primary/30 text-primary px-3 py-2 cursor-pointer hover:bg-primary/5">Data Science</a>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+
+<script>
+    function toggleFilterPanel() {
+        const panel = document.getElementById('filter-panel');
+        panel.classList.toggle('hidden');
+    }
+
+    function handleBookmark(btn, id, title, url) {
+        const added = toggleBookmark(id, title, url);
+        const icon = btn.querySelector('i');
+        if (added) {
+            icon.className = 'fas fa-bookmark text-sm text-primary';
+        } else {
+            icon.className = 'far fa-bookmark text-sm';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[data-id]').forEach(btn => {
+            const id = btn.getAttribute('data-id');
+            if (isBookmarked(id)) {
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'fas fa-bookmark text-sm text-primary';
+            }
+        });
+    });
+</script>

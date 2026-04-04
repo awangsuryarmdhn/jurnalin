@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="emerald">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }}</title>
+    <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}JURNALIN - Agregator jurnal ilmiah gratis dari CrossRef, arXiv, DOAJ, dan Semantic Scholar.{{ end }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:description" content="{{ if .Description }}{{ .Description }}{{ else }}Cari jurnal ilmiah dari 4 database utama secara simultan. Gratis dan open access.{{ end }}">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#10b981">
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- DaisyUI & Tailwind -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        tightest: '-.03em',
+                    },
+
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            },
+            daisyui: {
+                themes: ["emerald", "dim"]
+            }
+        }
+    </script>
+
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { color: oklch(var(--bc)); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: oklch(var(--b2)); }
+        ::-webkit-scrollbar-thumb { background: oklch(var(--p)); border-radius: 3px; }
+
+        /* Journal card */
+        .journal-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid oklch(var(--b3));
+        }
+        .journal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.06);
+            border-color: oklch(var(--p));
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, oklch(var(--p)) 0%, oklch(var(--s)) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hero: beautiful CSS-only gradient, no image dependency */
+        .hero-gradient {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 35%, #0f766e 65%, #134e4a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 20% 40%, rgba(52,211,153,0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse 60% 70% at 80% 20%, rgba(245,158,11,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* Glass card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Source badges */
+        .badge-crossref { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-arxiv { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .badge-doaj { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-ss { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+
+        /* Hero search button glow */
+        .btn-search-hero {
+            background: white;
+            color: #065f46;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-search-hero:hover {
+            background: #f0fdf4;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Line clamp */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Source card hover */
+        .source-card {
+            transition: all 0.3s ease;
+        }
+        .source-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        /* Toast animation */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .toast-enter { animation: slideInRight 0.3s ease-out; }
+        .toast-exit { animation: slideOutRight 0.3s ease-in; }
+
+        /* Active nav link */
+        .nav-link-active {
+            color: oklch(var(--pc)) !important;
+            background: oklch(var(--p)) !important;
+        }
+
+        /* PDF download button */
+        .btn-download-pdf {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-download-pdf:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Animate slide up */
+        @keyframes slideUp {
+            from { transform: translateY(16px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up { animation: slideUp 0.4s ease-out both; }
+        .animate-fade-in { animation: fadeInPage 0.3s ease-out; }
+        @keyframes fadeInPage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-base-200">
+
+    <!-- Navbar -->
+    <div id="navbar" class="navbar bg-base-100 sticky top-0 z-50 px-4 py-2 shadow-sm border-b border-base-200">
+        <div class="navbar-start">
+            <!-- Mobile menu -->
+            <div class="dropdown lg:hidden">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-circle mr-1">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content bg-white rounded-2xl z-[100] mt-3 w-56 p-2 shadow-xl border border-gray-100">
+                    <li>
+                        <a href="/" class="rounded-xl {{ if eq .NavPage "home" }}nav-link-active{{ end }}">
+                            <i class="fas fa-home w-4"></i> Beranda
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/about" class="rounded-xl {{ if eq .NavPage "about" }}nav-link-active{{ end }}">
+                            <i class="fas fa-info-circle w-4"></i> Tentang
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/api" class="rounded-xl {{ if eq .NavPage "api" }}nav-link-active{{ end }}">
+                            <i class="fas fa-code w-4"></i> API Docs
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl shadow-md bg-primary text-primary-content flex items-center justify-center">
+                    <i class="fas fa-book-open text-xl"></i>
+                </div>
+                <div class="hidden sm:flex flex-col">
+                    <span class="font-display font-black text-xl tracking-tight leading-none text-primary">JURNALIN</span>
+                    <span class="text-[0.6rem] text-secondary leading-none mt-1">jurnal valid, referensi beres</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Center nav -->
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1 gap-1 text-sm">
+                <li>
+                    <a href="/" class="rounded-xl font-medium hover:bg-indigo-50 hover:text-indigo-600 transition {{ if eq .NavPage "home" }}nav-link-active{{ end }}">
+                        <i class="fas fa-home"></i> Beranda
+                    </a>
+                </li>
+                <li>
+                    <a href="/about" class="rounded-xl font-medium hover:bg-indigo-50 hover:text-indigo-600 transition {{ if eq .NavPage "about" }}nav-link-active{{ end }}">
+                        <i class="fas fa-info-circle"></i> Tentang
+                    </a>
+                </li>
+                <li>
+                    <a href="/api" class="rounded-xl font-medium hover:bg-indigo-50 hover:text-indigo-600 transition {{ if eq .NavPage "api" }}nav-link-active{{ end }}">
+                        <i class="fas fa-code"></i> API Docs
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right -->
+        <div class="navbar-end gap-2">
+            <!-- Bookmark counter -->
+            <button onclick="showBookmarks()" class="btn btn-ghost btn-sm gap-1 text-gray-600 hover:text-indigo-600 relative" title="Bookmark Saya">
+                <i class="far fa-bookmark text-base"></i>
+                <span id="bookmark-count" class="badge badge-xs badge-primary absolute -top-1 -right-1 hidden">0</span>
+            </button>
+
+            <!-- Theme toggle -->
+            <label class="swap swap-rotate btn btn-ghost btn-sm btn-circle" title="Toggle tema">
+                <input type="checkbox" id="theme-toggle" onclick="toggleTheme()" />
+                <i class="fas fa-sun swap-on text-amber-500"></i>
+                <i class="fas fa-moon swap-off text-slate-600"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Bookmark Modal -->
+    <dialog id="bookmark-modal" class="modal">
+        <div class="modal-box max-w-lg">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-lg">
+                    <i class="fas fa-bookmark text-indigo-600 mr-2"></i>Bookmark Saya
+                </h3>
+                <button onclick="document.getElementById('bookmark-modal').close()" class="btn btn-sm btn-ghost btn-circle">✕</button>
+            </div>
+            <div id="bookmark-list" class="space-y-2 max-h-96 overflow-y-auto">
+                <!-- filled by JS -->
+            </div>
+            <div class="modal-action">
+                <button onclick="document.getElementById('bookmark-modal').close()" class="btn btn-ghost btn-sm">Tutup</button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+
+    <!-- Main Content -->
+    <main class="min-h-screen animate-fade-in">
+        {{ .Content }}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-neutral text-white relative overflow-hidden">
+        <div class="absolute inset-0 grid-pattern opacity-10"></div>
+        <div class="container mx-auto px-4 py-14 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+                <!-- Brand -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-10 h-10 rounded-xl shadow-lg border border-white/10 bg-primary text-primary-content flex items-center justify-center">
+                            <i class="fas fa-book-open text-xl"></i>
+                        </div>
+                        <span class="font-display font-black text-xl tracking-tight">JURNALIN</span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Jurnal valid, referensi beres. Agregator pencari karya ilmiah gratis.
+                    </p>
+                    <div class="flex gap-3 mt-4">
+                        <a href="https://github.com" target="_blank" class="text-slate-500 hover:text-white transition text-lg">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sumber -->
+                <div>
+                    <h4 class="font-semibold text-secondary mb-4 text-sm uppercase tracking-wider">Sumber Jurnal</h4>
+                    <ul class="space-y-2.5 text-sm text-slate-400">
+                        <li class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-emerald-500"></i>CrossRef (150M+)</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-emerald-500"></i>arXiv (2M+ preprint)</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-emerald-500"></i>DOAJ (8M+ open access)</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-emerald-500"></i>Semantic Scholar (200M+)</li>
+                    </ul>
+                </div>
+
+                <!-- Navigasi -->
+                <div>
+                    <h4 class="font-semibold text-indigo-400 mb-4 text-sm uppercase tracking-wider">Navigasi</h4>
+                    <ul class="space-y-2.5 text-sm text-slate-400">
+                        <li><a href="/" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-home w-4"></i>Beranda</a></li>
+                        <li><a href="/search?q=machine+learning" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-search w-4"></i>Cari Jurnal</a></li>
+                        <li><a href="/about" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-info-circle w-4"></i>Tentang</a></li>
+                        <li><a href="/api" class="hover:text-white transition flex items-center gap-2"><i class="fas fa-code w-4"></i>API Docs</a></li>
+                    </ul>
+                </div>
+
+                <!-- API -->
+                <div>
+                    <h4 class="font-semibold text-indigo-400 mb-4 text-sm uppercase tracking-wider">REST API</h4>
+                    <div class="bg-slate-800/60 rounded-xl p-3 border border-slate-700 text-xs font-mono text-slate-300 space-y-1.5">
+                        <div class="text-emerald-400">GET /api/v1/search</div>
+                        <div class="text-emerald-400">GET /api/v1/journal/:id</div>
+                        <div class="text-emerald-400">GET /api/v1/sources</div>
+                        <div class="text-slate-500 mt-2">?q=query&page=1</div>
+                    </div>
+                    <a href="/api" class="btn btn-xs btn-outline btn-primary mt-3 rounded-lg">
+                        <i class="fas fa-book mr-1"></i> Lihat Dokumentasi
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+                <p>JURNALIN &copy; 2024 — Open Source &amp; Free</p>
+                <p class="flex items-center gap-1.5">
+                    <i class="fas fa-heart text-red-500 text-xs"></i>
+                    Dibuat untuk mahasiswa Indonesia
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // ========================
+        // Theme Management
+        // ========================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('jurnalin_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme === 'dark' ? 'dim' : 'emerald');
+            const toggle = document.getElementById('theme-toggle');
+            if (toggle) toggle.checked = savedTheme === 'dark';
+        }
+
+        function toggleTheme() {
+            const current = localStorage.getItem('jurnalin_theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            localStorage.setItem('jurnalin_theme', next);
+            document.documentElement.setAttribute('data-theme', next === 'dark' ? 'dim' : 'emerald');
+            showToast(next === 'dark' ? '🌙 Mode gelap aktif' : '☀️ Mode terang aktif', 'info');
+        }
+
+        initTheme();
+
+        // ========================
+        // Toast Notifications
+        // ========================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const typeClasses = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-red-600 text-white',
+                info: 'bg-indigo-600 text-white',
+                warning: 'bg-amber-500 text-white',
+            };
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle',
+            };
+            toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl pointer-events-auto toast-enter text-sm font-medium min-w-[220px] ${typeClasses[type] || typeClasses.info}`;
+            toast.innerHTML = `<i class="fas ${icons[type] || icons.info} text-base"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ========================
+        // Bookmark Management
+        // ========================
+        function getBookmarks() {
+            return JSON.parse(localStorage.getItem('jurnalin_bookmarks') || '[]');
+        }
+
+        function saveBookmarks(bookmarks) {
+            localStorage.setItem('jurnalin_bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkCount();
+        }
+
+        function updateBookmarkCount() {
+            const bookmarks = getBookmarks();
+            const countEl = document.getElementById('bookmark-count');
+            if (countEl) {
+                if (bookmarks.length > 0) {
+                    countEl.textContent = bookmarks.length;
+                    countEl.classList.remove('hidden');
+                } else {
+                    countEl.classList.add('hidden');
+                }
+            }
+        }
+
+        function toggleBookmark(id, title, url) {
+            let bookmarks = getBookmarks();
+            const index = bookmarks.findIndex(b => b.id === id);
+            if (index === -1) {
+                bookmarks.push({ id, title, url: url || '/journal/' + id, savedAt: new Date().toISOString() });
+                saveBookmarks(bookmarks);
+                showToast('✅ Bookmark ditambahkan!', 'success');
+                return true;
+            } else {
+                bookmarks.splice(index, 1);
+                saveBookmarks(bookmarks);
+                showToast('🗑️ Bookmark dihapus', 'info');
+                return false;
+            }
+        }
+
+        function isBookmarked(id) {
+            return getBookmarks().some(b => b.id === id);
+        }
+
+        function showBookmarks() {
+            const bookmarks = getBookmarks();
+            const listEl = document.getElementById('bookmark-list');
+            if (!listEl) return;
+
+            if (bookmarks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="far fa-bookmark text-4xl mb-3 block opacity-30"></i>
+                        <p class="text-sm">Belum ada bookmark</p>
+                        <p class="text-xs mt-1">Simpan jurnal yang menarik untuk dibaca nanti</p>
+                    </div>`;
+            } else {
+                listEl.innerHTML = bookmarks.map(b => `
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-base-200 hover:bg-base-300 transition group">
+                        <div class="flex-1 min-w-0">
+                            <a href="${b.url || '/journal/' + b.id}" class="text-sm font-medium text-gray-800 hover:text-indigo-600 line-clamp-2 transition">${b.title}</a>
+                            <p class="text-xs text-gray-400 mt-0.5">${new Date(b.savedAt).toLocaleDateString('id-ID')}</p>
+                        </div>
+                        <button onclick="removeBookmark('${b.id}')" class="btn btn-ghost btn-xs btn-circle text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>`).join('');
+            }
+            document.getElementById('bookmark-modal').showModal();
+        }
+
+        function removeBookmark(id) {
+            let bookmarks = getBookmarks();
+            bookmarks = bookmarks.filter(b => b.id !== id);
+            saveBookmarks(bookmarks);
+            showBookmarks();
+            showToast('🗑️ Bookmark dihapus', 'info');
+        }
+
+        // ========================
+        // PDF Download
+        function downloadPDF(pdfUrl, title) {
+            if (!pdfUrl) {
+                showToast('❌ URL PDF tidak tersedia', 'error');
+                return;
+            }
+            showToast('⏬ Membuka dokumen...', 'info');
+            
+            // Generate clean filename
+            let cleanTitle = (title || "jurnal_ilmiah").replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            if (!cleanTitle.endsWith('.pdf')) cleanTitle += '.pdf';
+
+            // Point browser to a URL ending in .pdf so it understands it
+            const proxyUrl = '/pdf/proxy/' + encodeURIComponent(cleanTitle) + '?url=' + encodeURIComponent(pdfUrl) + '&title=' + encodeURIComponent(title || "jurnal");
+            
+            // Create a temporary anchor element to trigger download correctly
+            const a = document.createElement('a');
+            a.href = proxyUrl;
+            a.download = cleanTitle;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // ========================
+        // Copy to Clipboard
+        // ========================
+        function copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(message || '✅ Disalin ke clipboard!', 'success');
+            }).catch(() => {
+                // Fallback
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                showToast(message || '✅ Disalin ke clipboard!', 'success');
+            });
+        }
+
+        // Init on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBookmarkCount();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,274 @@
+<!-- Hero Section -->
+<div class="hero-gradient min-h-[90vh] flex items-center justify-center relative">
+    <div class="grid-pattern"></div>
+
+    <!-- Floating orbs for depth -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-72 h-72 bg-teal-300/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="container mx-auto px-4 py-20 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+
+            <!-- Trust Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-emerald-100 text-sm font-medium mb-8 backdrop-blur-sm">
+                <span class="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
+                Gratis · Open Access · Tanpa Registrasi
+            </div>
+
+            <!-- Logo mark + Title -->
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 rounded-2xl flex items-center justify-center bg-white/15 border border-white/25 backdrop-blur-md shadow-2xl">
+                    <i class="fas fa-book-open text-4xl text-white"></i>
+                </div>
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-black text-white mb-4 leading-none tracking-tight">
+                JURNALIN
+            </h1>
+            <p class="text-xl md:text-2xl text-emerald-100 font-light mb-2">
+                Satu pencarian, jutaan jurnal ilmiah
+            </p>
+            <p class="text-base text-white/60 mb-10 max-w-xl mx-auto">
+                Agregator jurnal dari <strong class="text-white/90">CrossRef, arXiv, DOAJ, dan Semantic Scholar</strong> secara bersamaan
+            </p>
+
+            <!-- Search Form -->
+            <form action="/search" method="GET" id="hero-search-form" class="w-full max-w-2xl mx-auto">
+                <div class="glass-card rounded-2xl p-2 flex flex-col sm:flex-row gap-2 shadow-2xl">
+                    <div class="flex-1 relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-sm pointer-events-none"></i>
+                        <input
+                            type="text"
+                            name="q"
+                            id="searchInput"
+                            placeholder="Cari topik, judul, penulis, atau DOI..."
+                            class="input input-lg w-full bg-transparent text-white placeholder-white/40 border-0 pl-11 focus:outline-none rounded-xl text-base"
+                            autocomplete="off"
+                            required
+                        />
+                    </div>
+                    <button type="submit" class="btn-search-hero btn btn-lg rounded-xl px-8 shrink-0">
+                        <i class="fas fa-search mr-2"></i>
+                        Cari Sekarang
+                    </button>
+                </div>
+
+                <!-- Popular topics -->
+                <div class="mt-5 flex flex-wrap justify-center gap-2">
+                    <span class="text-xs text-white/40 self-center">Populer:</span>
+                    <a href="/search?q=machine+learning" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">Machine Learning</a>
+                    <a href="/search?q=artificial+intelligence" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">AI</a>
+                    <a href="/search?q=deep+learning" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">Deep Learning</a>
+                    <a href="/search?q=pendidikan" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">Pendidikan</a>
+                    <a href="/search?q=kesehatan" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">Kesehatan</a>
+                    <a href="/search?q=blockchain" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">Blockchain</a>
+                    <a href="/search?q=iot" class="text-xs px-3 py-1 rounded-full border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition">IoT</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-base-200 to-transparent pointer-events-none"></div>
+</div>
+
+<!-- Stats Bar -->
+<div class="bg-base-100 border-b border-base-200 py-6">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+            <div>
+                <div class="text-3xl font-black gradient-text font-display" data-count="150">0</div>
+                <div class="text-xs text-base-content/50 mt-1 font-medium">Juta Artikel CrossRef</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black gradient-text font-display" data-count="200">0</div>
+                <div class="text-xs text-base-content/50 mt-1 font-medium">Juta Paper Semantic Scholar</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black gradient-text font-display" data-count="8">0</div>
+                <div class="text-xs text-base-content/50 mt-1 font-medium">Juta Open Access DOAJ</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black gradient-text font-display" data-count="4">0</div>
+                <div class="text-xs text-base-content/50 mt-1 font-medium">Sumber Terintegrasi</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Database Sources Section -->
+<div class="bg-base-100 py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3">
+                <i class="fas fa-database text-xs"></i> Database Resmi Akademik
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black text-base-content mb-2">Sumber Jurnal Terpercaya</h2>
+            <p class="text-base-content/50 max-w-lg mx-auto text-sm">Klik untuk langsung kunjungi masing-masing database</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- CrossRef - links to official site -->
+            <a href="https://www.crossref.org" target="_blank" rel="noopener" class="source-card group bg-base-100 border border-base-200 rounded-2xl p-6 text-center hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50 transition-all duration-300">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 transition">
+                    <i class="fas fa-link text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-base-content text-sm mb-1">CrossRef</h3>
+                <p class="text-xs text-base-content/40">150M+ DOI Resmi</p>
+                <div class="mt-3 text-xs text-blue-500 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <span>Kunjungi</span><i class="fas fa-external-link-alt text-[10px]"></i>
+                </div>
+            </a>
+
+            <!-- arXiv - links to official site -->
+            <a href="https://arxiv.org" target="_blank" rel="noopener" class="source-card group bg-base-100 border border-base-200 rounded-2xl p-6 text-center hover:border-red-300 hover:shadow-lg hover:shadow-red-50 transition-all duration-300">
+                <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-red-100 transition">
+                    <i class="fas fa-atom text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-base-content text-sm mb-1">arXiv</h3>
+                <p class="text-xs text-base-content/40">2M+ Preprint Ilmiah</p>
+                <div class="mt-3 text-xs text-red-500 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <span>Kunjungi</span><i class="fas fa-external-link-alt text-[10px]"></i>
+                </div>
+            </a>
+
+            <!-- DOAJ - links to official site -->
+            <a href="https://doaj.org" target="_blank" rel="noopener" class="source-card group bg-base-100 border border-base-200 rounded-2xl p-6 text-center hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-50 transition-all duration-300">
+                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-emerald-100 transition">
+                    <i class="fas fa-unlock text-emerald-600 text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-base-content text-sm mb-1">DOAJ</h3>
+                <p class="text-xs text-base-content/40">8M+ Open Access</p>
+                <div class="mt-3 text-xs text-emerald-600 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <span>Kunjungi</span><i class="fas fa-external-link-alt text-[10px]"></i>
+                </div>
+            </a>
+
+            <!-- Semantic Scholar - links to official site -->
+            <a href="https://www.semanticscholar.org" target="_blank" rel="noopener" class="source-card group bg-base-100 border border-base-200 rounded-2xl p-6 text-center hover:border-violet-300 hover:shadow-lg hover:shadow-violet-50 transition-all duration-300">
+                <div class="w-14 h-14 bg-violet-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-violet-100 transition">
+                    <i class="fas fa-brain text-violet-600 text-2xl"></i>
+                </div>
+                <h3 class="font-bold text-base-content text-sm mb-1">Semantic Scholar</h3>
+                <p class="text-xs text-base-content/40">200M+ Paper AI</p>
+                <div class="mt-3 text-xs text-violet-600 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <span>Kunjungi</span><i class="fas fa-external-link-alt text-[10px]"></i>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Tip note -->
+        <p class="text-center text-xs text-base-content/40 mt-6">
+            <i class="fas fa-info-circle mr-1"></i>
+            JURNALIN mencari di semua sumber sekaligus. Klik kartu di atas untuk membuka website resmi masing-masing.
+        </p>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="bg-base-200 py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3">
+                <i class="fas fa-star text-xs"></i> Keunggulan JURNALIN
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black text-base-content mb-2">Kenapa JURNALIN?</h2>
+            <p class="text-base-content/50 max-w-lg mx-auto text-sm">Dirancang khusus untuk mahasiswa dan peneliti Indonesia</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-primary hover:shadow-md transition-all group">
+                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary transition-all">
+                    <i class="fas fa-globe text-primary text-xl group-hover:text-white transition-colors"></i>
+                </div>
+                <h3 class="font-bold text-base-content mb-2">Multi Sumber</h3>
+                <p class="text-sm text-base-content/60">Cari dari 4 database akademik terkemuka sekaligus dalam satu pencarian</p>
+            </div>
+
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-emerald-400 hover:shadow-md transition-all group">
+                <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-emerald-500 transition-all">
+                    <i class="fas fa-unlock text-emerald-600 text-xl group-hover:text-white transition-colors"></i>
+                </div>
+                <h3 class="font-bold text-base-content mb-2">100% Gratis</h3>
+                <p class="text-sm text-base-content/60">Semua jurnal open access tersedia tanpa biaya. Download PDF langsung!</p>
+            </div>
+
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-amber-400 hover:shadow-md transition-all group">
+                <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-amber-500 transition-all">
+                    <i class="fas fa-bolt text-amber-500 text-xl group-hover:text-white transition-colors"></i>
+                </div>
+                <h3 class="font-bold text-base-content mb-2">Super Cepat</h3>
+                <p class="text-sm text-base-content/60">Dibangun dengan Go, query paralel ke semua sumber dalam hitungan detik</p>
+            </div>
+
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 hover:border-purple-400 hover:shadow-md transition-all group">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-all">
+                    <i class="fas fa-code text-purple-600 text-xl group-hover:text-white transition-colors"></i>
+                </div>
+                <h3 class="font-bold text-base-content mb-2">REST API Publik</h3>
+                <p class="text-sm text-base-content/60">API terdokumentasi untuk integrasi dengan aplikasi dan penelitian Anda</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-base-100 py-16">
+    <div class="container mx-auto px-4">
+        <div class="relative overflow-hidden bg-gradient-to-br from-primary to-emerald-700 rounded-3xl p-10 md:p-16 text-center text-white">
+            <div class="grid-pattern absolute inset-0 opacity-20 pointer-events-none"></div>
+            <div class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 text-white/90 text-sm font-medium mb-6 border border-white/20">
+                    <i class="fas fa-rocket text-amber-300"></i> Mulai Sekarang — Gratis
+                </div>
+                <h2 class="text-3xl md:text-4xl font-black mb-3">Siap Mencari Referensi?</h2>
+                <p class="text-white/70 mb-8 max-w-md mx-auto">
+                    Akses jutaan jurnal ilmiah dari seluruh dunia. Tanpa registrasi, tanpa batas.
+                </p>
+                <button onclick="document.getElementById('searchInput').focus(); window.scrollTo({top:0,behavior:'smooth'})"
+                    class="btn btn-lg bg-white text-emerald-700 border-0 hover:bg-emerald-50 font-bold rounded-xl px-10 shadow-xl">
+                    <i class="fas fa-search mr-2"></i> Mulai Mencari
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animated counters
+    function animateCounter(el) {
+        const target = parseInt(el.getAttribute('data-count'));
+        const suffix = target >= 100 ? 'M+' : target >= 10 ? 'M+' : target <= 9 && target > 1 ? 'M+' : '';
+        let current = 0;
+        const step = target / 50;
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            el.textContent = Math.floor(current) + suffix;
+        }, 30);
+    }
+
+    // Observe stats section
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    const statsSection = document.querySelector('[data-count]')?.closest('.container');
+    if (statsSection) observer.observe(statsSection.parentElement);
+
+    // Focus search
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('searchInput')?.focus();
+    });
+</script>

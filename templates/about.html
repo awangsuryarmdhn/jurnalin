@@ -1,0 +1,168 @@
+<div class="min-h-screen bg-base-200">
+    <!-- Hero Section -->
+    <div class="hero-gradient py-20 relative overflow-hidden">
+        <div class="grid-pattern"></div>
+        
+        <!-- Floating orbs -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-20"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-emerald-400/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl opacity-20"></div>
+
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="w-20 h-20 bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-slide-up">
+                <i class="fas fa-book-open text-white text-3xl"></i>
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm font-medium mb-6 backdrop-blur-sm animate-slide-up" style="animation-delay: 0.1s">
+                <i class="fas fa-info-circle text-xs"></i> Tentang Platform JURNALIN
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight animate-slide-up" style="animation-delay: 0.2s">
+                Agregator Jurnal Masa Depan
+            </h1>
+            <p class="text-white/70 text-lg max-w-2xl mx-auto animate-slide-up font-light" style="animation-delay: 0.3s">
+                Misi kami sederhana: Membangun jembatan gratis menuju pengetahuan ilmiah dunia bagi seluruh mahasiswa dan peneliti di Indonesia.
+            </p>
+        </div>
+    </div>
+
+    <!-- Content Blocks -->
+    <div class="container mx-auto px-4 py-12 max-w-5xl -mt-10 relative z-20">
+        
+        <!-- Philosophy Card -->
+        <div class="bg-base-100 rounded-3xl p-8 md:p-12 shadow-xl border border-base-200 mb-8 animate-slide-up" style="animation-delay: 0.4s">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+                        <i class="fas fa-brain"></i> Design Thinking
+                    </div>
+                    <h2 class="text-3xl font-black text-base-content mb-6 tracking-tight">Apa itu JURNALIN?</h2>
+                    <div class="space-y-4 text-base-content/60 leading-relaxed font-medium">
+                        <p>
+                            <span class="text-primary font-bold">JURNALIN</span> lahir dari keresahan mahasiswa yang kesulitan mencari referensi tugas akhir. Terlalu banyak website yang harus dibuka satu-satu, terlalu banyak login, dan terlalu banyak iklan yang mengganggu.
+                        </p>
+                        <p>
+                            Kami menggunakan pendekatan <span class="italic">user-centric</span> untuk memampas hambatan-hambatan tersebut. Dengan <span class="text-base-content font-bold">satu klik</span>, sistem kami akan melakukan pencarian paralel ke 4 database jurnal terpercaya di dunia secara real-time.
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-base-200 rounded-2xl p-6 relative">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-4 bg-base-100 rounded-xl shadow-sm border border-base-300">
+                            <div class="text-3xl mb-2">⚡</div>
+                            <h4 class="font-bold text-sm">Super Cepat</h4>
+                            <p class="text-[10px] opacity-50">Concurrency engine dengan Go</p>
+                        </div>
+                        <div class="p-4 bg-base-100 rounded-xl shadow-sm border border-base-300">
+                            <div class="text-3xl mb-2">🔓</div>
+                            <h4 class="font-bold text-sm">Open Access</h4>
+                            <p class="text-[10px] opacity-50">Prioritas jurnal gratis</p>
+                        </div>
+                        <div class="p-4 bg-base-100 rounded-xl shadow-sm border border-base-300">
+                            <div class="text-3xl mb-2">💎</div>
+                            <h4 class="font-bold text-sm">Premium UI</h4>
+                            <p class="text-[10px] opacity-50">Modern & Tanpa Iklan</p>
+                        </div>
+                        <div class="p-4 bg-base-100 rounded-xl shadow-sm border border-base-300">
+                            <div class="text-3xl mb-2">🤝</div>
+                            <h4 class="font-bold text-sm">Collaborative</h4>
+                            <p class="text-[10px] opacity-50">Open Source Community</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Deep Dive -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- CrossRef -->
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 shadow-sm group hover:border-blue-400 transition-all">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                        <i class="fas fa-link text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">CrossRef</h3>
+                        <p class="text-[10px] text-blue-600 font-semibold uppercase tracking-widest">Global Partner</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/50 leading-relaxed mb-4">
+                    Pencatatan DOI (Digital Object Identifier) terbesar di planet ini. Digunakan untuk melacak artikel dari penerbit Elsevier, Springer, Wiley, dan ribuan lainnya.
+                </p>
+                <a href="https://crossref.org" target="_blank" class="text-xs font-bold text-blue-600 hover:gap-2 transition-all flex items-center gap-1">
+                    Pelajari CrossRef <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- arXiv -->
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 shadow-sm group hover:border-red-400 transition-all">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600">
+                        <i class="fas fa-atom text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">arXiv.org</h3>
+                        <p class="text-[10px] text-red-600 font-semibold uppercase tracking-widest">Preprint Repository</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/50 leading-relaxed mb-4">
+                    Server distribusi terbuka untuk paper pra-cetak (preprint) yang dikelola oleh Cornell University. Fokus pada Fisika, Matematika, dan Ilmu Komputer.
+                </p>
+                <a href="https://arxiv.org" target="_blank" class="text-xs font-bold text-red-600 hover:gap-2 transition-all flex items-center gap-1">
+                    Pelajari arXiv <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- DOAJ -->
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 shadow-sm group hover:border-emerald-400 transition-all">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-unlock text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">DOAJ</h3>
+                        <p class="text-[10px] text-emerald-600 font-semibold uppercase tracking-widest">Open Access Hub</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/50 leading-relaxed mb-4">
+                    Directory of Open Access Journals adalah database independen yang menyediakan akses ke jurnal peer-reviewed berkualitas tinggi yang 100% gratis dibaca.
+                </p>
+                <a href="https://doaj.org" target="_blank" class="text-xs font-bold text-emerald-600 hover:gap-2 transition-all flex items-center gap-1">
+                    Pelajari DOAJ <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Semantic Scholar -->
+            <div class="bg-base-100 rounded-2xl p-6 border border-base-200 shadow-sm group hover:border-violet-400 transition-all">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600">
+                        <i class="fas fa-brain text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">Semantic Scholar</h3>
+                        <p class="text-[10px] text-violet-600 font-semibold uppercase tracking-widest">AI Intelligence</p>
+                    </div>
+                </div>
+                <p class="text-sm text-base-content/50 leading-relaxed mb-4">
+                    Mesin pencari berbasis kecerdasan buatan dari Allen Institute for AI. Membantu peneliti menemukan makalah yang paling relevan lewat teknologi NLP.
+                </p>
+                <a href="https://semanticscholar.org" target="_blank" class="text-xs font-bold text-violet-600 hover:gap-2 transition-all flex items-center gap-1">
+                    Pelajari Semantic Scholar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="bg-primary rounded-3xl p-10 text-center text-white relative overflow-hidden shadow-2xl">
+            <div class="grid-pattern absolute inset-0 opacity-20"></div>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-black mb-4">Mulai Perjalanan Risetmu</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="/" class="btn bg-white text-primary border-0 hover:bg-base-200 font-bold rounded-xl px-10">
+                        <i class="fas fa-search mr-2"></i>Cari Jurnal
+                    </a>
+                    <a href="/api" class="btn btn-ghost border border-white/30 text-white font-bold rounded-xl px-10">
+                        <i class="fas fa-code mr-2"></i>Dokumentasi API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
