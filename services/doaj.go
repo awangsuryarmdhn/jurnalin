@@ -174,7 +174,7 @@ func (s *DOAJService) Search(req models.SearchRequest) (models.SearchResponse, e
 func (s *DOAJService) GetDetail(doi string) (models.Journal, error) {
 	var journal models.Journal
 
-	queryURL := fmt.Sprintf("%s/%s", s.BaseURL, url.PathEscape(doi))
+	queryURL := fmt.Sprintf("%s/%s?page=1&pageSize=1", s.BaseURL, url.PathEscape(doi))
 
 	httpResp, err := s.HTTPClient.Get(queryURL)
 	if err != nil {
@@ -187,10 +187,16 @@ func (s *DOAJService) GetDetail(doi string) (models.Journal, error) {
 		return journal, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	var article DOAJArticle
-	if err := json.Unmarshal(body, &article); err != nil {
+	var doajResp DOAJResponse
+	if err := json.Unmarshal(body, &doajResp); err != nil {
 		return journal, fmt.Errorf("failed to parse response: %w", err)
 	}
+
+	if len(doajResp.Results) == 0 {
+		return journal, fmt.Errorf("article not found")
+	}
+
+	article := doajResp.Results[0]
 
 	// Title
 	journal.Title = article.Bibjson.Title
@@ -235,11 +241,19 @@ func (s *DOAJService) GetDetail(doi string) (models.Journal, error) {
 		}
 	}
 
-	// DOI
-	journal.DOI = doi
+	// DOI - extract from the actual response
+	for _, id := range article.Bibjson.Identifier {
+		if id.Type == "doi" {
+			journal.DOI = id.ID
+			break
+		}
+	}
 	journal.IsOpenAccess = true
 	journal.Source = "DOAJ"
-	journal.ID = "doaj_" + doi
+	journal.ID = "doaj_" + journal.DOI
+	if journal.DOI == "" {
+		journal.ID = "doaj_" + url.QueryEscape(journal.Title)
+	}
 
 	return journal, nil
 }
