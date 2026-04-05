@@ -64,6 +64,8 @@ func main() {
 				<link rel="preconnect" href="https://fonts.googleapis.com">
 				<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 				<style>* { font-family: 'Inter', sans-serif; }</style>
+				<!-- Vercel Analytics -->
+				<script defer src="/_vercel/insights/script.js"></script>
 			</head>
 			<body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center">
 				<div class="text-center px-4">
