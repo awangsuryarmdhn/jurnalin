@@ -241,7 +241,7 @@ func (s *SemanticScholarService) GetName() string {
 
 // IsAvailable checks if the service is available
 func (s *SemanticScholarService) IsAvailable() bool {
-	resp, err := s.HTTPClient.Get("https://api.semanticscholar.org/health")
+	resp, err := s.HTTPClient.Get("https://api.semanticscholar.org/health/check")
 	if err != nil {
 		return false
 	}

@@ -45,8 +45,9 @@ type DOAJArticle struct {
 			Term string `json:"term"`
 		} `json:"subject"`
 		Link        []struct {
-			URL  string `json:"url"`
-			Type string `json:"type"`
+			URL         string `json:"url"`
+			Type        string `json:"type"`
+			ContentType string `json:"content_type"`
 		} `json:"link"`
 		Author []struct {
 			Name string `json:"name"`
@@ -143,9 +144,10 @@ func (s *DOAJService) Search(req models.SearchRequest) (models.SearchResponse, e
 		for _, link := range article.Bibjson.Link {
 			if link.Type == "fulltext" {
 				journal.URL = link.URL
-			}
-			if link.Type == "pdf" {
-				journal.PDFURL = link.URL
+				// Check if this is a PDF link based on content type
+				if strings.Contains(link.ContentType, "pdf") {
+					journal.PDFURL = link.URL
+				}
 			}
 		}
 
@@ -226,9 +228,10 @@ func (s *DOAJService) GetDetail(doi string) (models.Journal, error) {
 	for _, link := range article.Bibjson.Link {
 		if link.Type == "fulltext" {
 			journal.URL = link.URL
-		}
-		if link.Type == "pdf" {
-			journal.PDFURL = link.URL
+			// Check if this is a PDF link based on content type
+			if strings.Contains(link.ContentType, "pdf") {
+				journal.PDFURL = link.URL
+			}
 		}
 	}
 
