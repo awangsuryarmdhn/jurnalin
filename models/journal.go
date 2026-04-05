@@ -35,6 +35,7 @@ type SearchRequest struct {
 	Language string   `json:"language,omitempty"`
 	Subjects []string `json:"subjects,omitempty"`
 	SortBy   string   `json:"sort_by,omitempty"`
+	Source   string   `json:"source,omitempty"`
 }
 
 // SearchResponse represents a search response

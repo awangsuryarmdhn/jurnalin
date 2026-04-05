@@ -43,8 +43,8 @@
             <h2 class="text-xl font-black text-base-content mb-4 tracking-tight">Endpoint Utama (Base URL)</h2>
             <div class="relative group">
                 <div class="bg-neutral p-5 rounded-2xl flex items-center justify-between border border-neutral-focus">
-                    <code class="text-emerald-400 font-mono text-sm break-all font-bold" id="base-url-text">http://localhost:8080/api/v1</code>
-                    <button onclick="copyToClipboard('http://localhost:8080/api/v1', 'Base URL disalin!')" 
+                    <code class="text-emerald-400 font-mono text-sm break-all font-bold" id="base-url-text">https://www.jurnalin.app/api/v1</code>
+                    <button onclick="copyToClipboard('https://www.jurnalin.app/api/v1', 'Base URL disalin!')" 
                         class="btn btn-sm btn-ghost text-neutral-content/40 hover:text-emerald-400 transition-colors shrink-0">
                         <i class="fas fa-copy"></i>
                     </button>
@@ -92,6 +92,24 @@
                                     Filter tahun awal riset.
                                 </div>
                             </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">year_to</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Filter tahun akhir riset.
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">language</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Filter bahasa: <code class="text-xs">en, id, de, fr</code>.
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 border-t border-base-200 pt-3">
+                                <code class="text-base-content font-bold bg-base-200 px-2 py-0.5 rounded text-xs">sort</code>
+                                <div class="text-xs text-base-content/60 italic">
+                                    Urutkan: <code class="text-xs">relevance, year_desc, year_asc, citations</code>.
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-8">
@@ -99,6 +117,12 @@
                             <div class="flex flex-wrap gap-2">
                                 <a href="/api/v1/search?q=deep+learning" target="_blank" class="btn btn-sm btn-ghost border-base-300 rounded-xl text-[10px] lowercase font-mono">
                                     /search?q=deep+learning
+                                </a>
+                                <a href="/api/v1/search?q=machine+learning&year_from=2020&sort=citations" target="_blank" class="btn btn-sm btn-ghost border-base-300 rounded-xl text-[10px] lowercase font-mono">
+                                    /search?year_from=2020&sort=citations
+                                </a>
+                                <a href="/api/v1/search?q=AI&source=crossref" target="_blank" class="btn btn-sm btn-ghost border-base-300 rounded-xl text-[10px] lowercase font-mono">
+                                    /search?source=crossref
                                 </a>
                             </div>
                         </div>

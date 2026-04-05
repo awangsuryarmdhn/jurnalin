@@ -66,6 +66,12 @@ func (a *AggregatorService) Search(req models.SearchRequest) (models.AggregatedR
 		go func(svc JournalService) {
 			defer wg.Done()
 
+			// Skip if specific source requested and this isn't it
+			if req.Source != "" && strings.ToLower(svc.GetName()) != strings.ToLower(req.Source) {
+				resultChan <- searchResult{Source: svc.GetName()}
+				return
+			}
+
 			if !svc.IsAvailable() {
 				resultChan <- searchResult{Source: svc.GetName()}
 				return
@@ -111,22 +117,25 @@ func (a *AggregatorService) Search(req models.SearchRequest) (models.AggregatedR
 		return resp, fmt.Errorf("Semua pencarian gagal atau timeout. Detail: %s", strings.Join(errs, ", "))
 	}
 
+	// Apply filters
+	resp.Results = a.applyFilters(resp.Results, req)
+
 	currentYear := time.Now().Year()
 
-	// 1. Calculate Score for each result
+	// Calculate Score for each result
 	for i := range resp.Results {
 		var score float64 = 0
-		
+
 		// Weight 1: Open Access (High priority for accessibility)
 		if resp.Results[i].IsOpenAccess {
 			score += 50
 		}
-		
+
 		// Weight 2: Citations (Quality indicator)
 		citations := float64(resp.Results[i].Citations)
 		if citations > 1000 { citations = 1000 }
 		score += (citations / 1000.0) * 30
-		
+
 		// Weight 3: Recency (Freshness)
 		if resp.Results[i].Year > 0 {
 			age := currentYear - resp.Results[i].Year
@@ -135,20 +144,59 @@ func (a *AggregatorService) Search(req models.SearchRequest) (models.AggregatedR
 				score += (1.0 - float64(age)/20.0) * 20
 			}
 		}
-		
+
 		resp.Results[i].Score = score
 	}
 
-	// Sort by Score descending
-	sort.SliceStable(resp.Results, func(i, j int) bool {
-		return resp.Results[i].Score > resp.Results[j].Score
-	})
+	// Sort based on sort_by parameter
+	switch req.SortBy {
+	case "year_desc":
+		sort.SliceStable(resp.Results, func(i, j int) bool {
+			return resp.Results[i].Year > resp.Results[j].Year
+		})
+	case "year_asc":
+		sort.SliceStable(resp.Results, func(i, j int) bool {
+			return resp.Results[i].Year < resp.Results[j].Year
+		})
+	case "citations":
+		sort.SliceStable(resp.Results, func(i, j int) bool {
+			return resp.Results[i].Citations > resp.Results[j].Citations
+		})
+	default: // relevance - sort by score
+		sort.SliceStable(resp.Results, func(i, j int) bool {
+			return resp.Results[i].Score > resp.Results[j].Score
+		})
+	}
 
 	if len(resp.Results) > req.PageSize {
 		resp.Results = resp.Results[:req.PageSize]
 	}
 
 	return resp, nil
+}
+
+// applyFilters applies year, language, and source filters to results
+func (a *AggregatorService) applyFilters(results []models.Journal, req models.SearchRequest) []models.Journal {
+	var filtered []models.Journal
+
+	for _, journal := range results {
+		// Year filter
+		if req.YearFrom > 0 && journal.Year < req.YearFrom {
+			continue
+		}
+		if req.YearTo > 0 && journal.Year > req.YearTo {
+			continue
+		}
+
+		// Language filter
+		if req.Language != "" && journal.Language != "" && strings.ToLower(journal.Language) != strings.ToLower(req.Language) {
+			continue
+		}
+
+		filtered = append(filtered, journal)
+	}
+
+	return filtered
 }
 
 // GetDetail gets journal detail by ID

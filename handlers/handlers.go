@@ -166,6 +166,7 @@ func (h *Handler) Search(c *gin.Context) {
 		YearTo:   yearTo,
 		Language: language,
 		SortBy:   sortBy,
+		Source:   source,
 	}
 
 	var results models.AggregatedResponse
