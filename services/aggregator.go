@@ -67,7 +67,7 @@ func (a *AggregatorService) Search(req models.SearchRequest) (models.AggregatedR
 			defer wg.Done()
 
 			// Skip if specific source requested and this isn't it
-			if req.Source != "" && strings.ToLower(svc.GetName()) != strings.ToLower(req.Source) {
+			if req.Source != "" && !strings.EqualFold(svc.GetName(), req.Source) {
 				resultChan <- searchResult{Source: svc.GetName()}
 				return
 			}
@@ -189,7 +189,7 @@ func (a *AggregatorService) applyFilters(results []models.Journal, req models.Se
 		}
 
 		// Language filter
-		if req.Language != "" && journal.Language != "" && strings.ToLower(journal.Language) != strings.ToLower(req.Language) {
+		if req.Language != "" && journal.Language != "" && !strings.EqualFold(journal.Language, req.Language) {
 			continue
 		}
 
