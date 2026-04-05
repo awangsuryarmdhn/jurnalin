@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -16,15 +17,18 @@ import (
 type SemanticScholarService struct {
 	BaseURL    string
 	HTTPClient *http.Client
+	APIKey     string
 }
 
 // NewSemanticScholarService creates a new Semantic Scholar service
 func NewSemanticScholarService() *SemanticScholarService {
+	apiKey := os.Getenv("SEMANTIC_SCHOLAR_API_KEY")
 	return &SemanticScholarService{
 		BaseURL: "https://api.semanticscholar.org/graph/v1/paper/search",
 		HTTPClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		APIKey: apiKey,
 	}
 }
 
@@ -82,16 +86,21 @@ func (s *SemanticScholarService) Search(req models.SearchRequest) (models.Search
 		fields,
 	)
 
-	// Make HTTP request
-	httpResp, err := s.HTTPClient.Get(queryURL)
+	// Make HTTP request with retry for rate limits
+	httpResp, err := s.doRequest(queryURL)
 	if err != nil {
-		return resp, fmt.Errorf("failed to execute request: %w", err)
+		return resp, err
 	}
 	defer httpResp.Body.Close()
 
 	body, err := io.ReadAll(httpResp.Body)
 	if err != nil {
 		return resp, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	// Check for rate limit error
+	if httpResp.StatusCode == http.StatusTooManyRequests {
+		return resp, fmt.Errorf("Semantic Scholar rate limit exceeded. Try again later or add an API key")
 	}
 
 	var ssResp SemanticScholarResponse
@@ -167,15 +176,20 @@ func (s *SemanticScholarService) GetDetail(paperID string) (models.Journal, erro
 	fields := "title,abstract,year,authors,externalIds,url,venue,citationCount,influentialCitationCount,openAccessPdf,fieldsOfStudy,isOpenAccess"
 	queryURL := fmt.Sprintf("https://api.semanticscholar.org/graph/v1/paper/%s?fields=%s", paperID, fields)
 
-	httpResp, err := s.HTTPClient.Get(queryURL)
+	httpResp, err := s.doRequest(queryURL)
 	if err != nil {
-		return journal, fmt.Errorf("failed to execute request: %w", err)
+		return journal, err
 	}
 	defer httpResp.Body.Close()
 
 	body, err := io.ReadAll(httpResp.Body)
 	if err != nil {
 		return journal, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	// Check for rate limit error
+	if httpResp.StatusCode == http.StatusTooManyRequests {
+		return journal, fmt.Errorf("Semantic Scholar rate limit exceeded. Try again later or add an API key")
 	}
 
 	var paper SemanticScholarPaper
@@ -247,6 +261,26 @@ func (s *SemanticScholarService) IsAvailable() bool {
 	}
 	defer resp.Body.Close()
 	return resp.StatusCode == http.StatusOK
+}
+
+// doRequest makes an HTTP request with the API key header if available
+func (s *SemanticScholarService) doRequest(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Add API key header if available
+	if s.APIKey != "" {
+		req.Header.Set("x-api-key", s.APIKey)
+	}
+
+	resp, err := s.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+
+	return resp, nil
 }
 
 // GetAuthorNames extracts author names as a comma-separated string
